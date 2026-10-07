@@ -1,0 +1,244 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+typedef struct disciplina
+{
+    int   idDisciplina;
+    char  nome[60];
+    float cargaHoraria;
+    struct disciplina *proximo;
+} disciplina;
+
+typedef struct turma
+{
+    int  idTurma;
+    char sala[20];
+    char periodo[10];
+    int  idDisciplina;
+    struct turma *proximo;
+} turma;
+
+// insercao no fim da lista
+
+disciplina *inserirFim_D(disciplina *lista, disciplina *novo)
+{
+    if (lista == NULL)
+    {
+        return novo;
+    }
+    lista->proximo = inserirFim_D(lista->proximo, novo);
+    return lista;
+}
+
+turma *inserirFim_T(turma *lista, turma *novo)
+{
+    if (lista == NULL)
+    {
+        return novo;
+    }
+    lista->proximo = inserirFim_T(lista->proximo, novo);
+    return lista;
+}
+
+// Formato disciplina.txt: id_disciplina;nome;carga_horaria
+// Formato turma.txt: id_turma;sala;periodo;id_disciplina 
+
+disciplina *lerDisc(const  char *nomeArquivo) //leitura dos .txt; const eh pra ser so leitura 
+{
+    FILE *arquivo = fopen(nomeArquivo, "r");
+    if (arquivo == NULL)
+    {
+        printf("Erro ao abrir o arquivo %s\n", nomeArquivo);
+        return NULL;
+    }
+
+    disciplina *lista = NULL;
+    char linha[200];
+
+    while (fgets(linha, sizeof(linha), arquivo) != NULL)
+    {
+        linha[strcspn(linha, "\r\n")] = '\0'; // remove quebra de linha 
+        if (strlen(linha) == 0)
+        {
+            continue;
+        }
+
+        disciplina *novo = malloc(sizeof(disciplina));
+        char *token;
+
+        token = strtok(linha, ";");
+        novo->idDisciplina = atoi(token);
+
+        token = strtok(NULL, ";");
+        strcpy(novo->nome, token);
+
+        token = strtok(NULL, ";");
+        novo->cargaHoraria = atof(token);
+
+        novo->proximo = NULL;
+
+        lista = inserirFim_D(lista, novo);
+    }
+
+    fclose(arquivo);
+    return lista;
+}
+
+turma *lerTurmas(const char *nomeArquivo) //mesma coisa do lerDisc, so muda que agora eh pra a struct turma.
+{
+    FILE *arquivo = fopen(nomeArquivo, "r");
+    if (arquivo == NULL)
+    {
+        printf("Erro ao abrir o arquivo %s\n", nomeArquivo);
+        return NULL;
+    }
+
+    turma *lista = NULL;
+    char linha[200];
+
+    while (fgets(linha, sizeof(linha), arquivo) != NULL)
+    {
+        linha[strcspn(linha, "\r\n")] = '\0';
+        if (strlen(linha) == 0)
+        {
+            continue;
+        }
+
+        turma *novo = malloc(sizeof(turma));
+        char *token;
+
+        token = strtok(linha, ";");
+        novo->idTurma = atoi(token);
+
+        token = strtok(NULL, ";");
+        strcpy(novo->sala, token);
+
+        token = strtok(NULL, ";");
+        strcpy(novo->periodo, token);
+
+        token = strtok(NULL, ";");
+        novo->idDisciplina = atoi(token);
+
+        novo->proximo = NULL;
+
+        lista = inserirFim_T(lista, novo);
+    }
+
+    fclose(arquivo);
+    return lista;
+}
+
+// impressão para depuração
+
+void imprimirDisc(disciplina *lista)
+{
+    if (lista == NULL)
+    {
+        return;
+    }
+    printf("%d | %-25s | %.1fh\n", lista->idDisciplina, lista->nome, lista->cargaHoraria);
+    imprimirDisc(lista->proximo);
+}
+
+void imprimirTurmas(turma *lista)
+{
+    if (lista == NULL)
+    {
+        return;
+    }
+    printf("%d | sala %-6s | %-10s | disciplina %d\n",
+           lista->idTurma, lista->sala, lista->periodo, lista->idDisciplina);
+    imprimirTurmas(lista->proximo);
+}
+
+// junção: turmas de uma disciplina (N:1)
+/* percorre a lista de turmas e devolve uma NOVA lista (cópia)  
+só com as turmas daquela disciplina. é a "lista dinâmica da seção" que vai alimentar o relatório "Turmas por disciplina". */
+
+turma *buscarTporD(turma *lista, int idDisciplina)
+{
+    if (lista == NULL)
+    {
+        return NULL;
+    }
+
+    if (lista->idDisciplina == idDisciplina)
+    {
+        turma *copia = malloc(sizeof(turma));
+        *copia = *lista;
+        copia->proximo = buscarTporD(lista->proximo, idDisciplina);
+        return copia;
+    }
+
+    return buscarTporD(lista->proximo, idDisciplina); //TporD = turmas por disciplina
+}
+
+// relatorio: para cada disciplina, lista suas turmas
+
+void gerarRelatorioTporD(disciplina *disciplinas, turma *turmas)
+{
+    if (disciplinas == NULL)
+    {
+        return;
+    }
+
+    printf("\nDisciplina: %s (id %d)\n", disciplinas->nome, disciplinas->idDisciplina);
+
+    turma *turmasDaDisciplina = buscarTporD(turmas, disciplinas->idDisciplina);
+
+    if (turmasDaDisciplina == NULL)
+    {
+        printf("  (nenhuma turma cadastrada)\n");
+    }
+    else
+    {
+        imprimirTurmas(turmasDaDisciplina);
+    }
+
+    gerarRelatorioTporD(disciplinas->proximo, turmas);
+}
+
+// free na alocacao dinam.
+
+void liberarDisciplinas(disciplina *lista)
+{
+    if (lista == NULL)
+    {
+        return;
+    }
+    liberarDisciplinas(lista->proximo);
+    free(lista);
+}
+
+void liberarTurmas(turma *lista)
+{
+    if (lista == NULL)
+    {
+        return;
+    }
+    liberarTurmas(lista->proximo);
+    free(lista);
+}
+
+// main pra teste
+
+int main(void)
+{
+    disciplina *disciplinas = lerDisc("disciplina.txt");
+    turma *turmas = lerTurmas("turma.txt");
+
+    printf("=== Disciplinas lidas ===\n");
+    imprimirDisc(disciplinas);
+
+    printf("\n=== Turmas lidas ===\n");
+    imprimirTurmas(turmas);
+
+    printf("\n=== Relatorio: Turmas por Disciplina ===\n");
+    gerarRelatorioTporD(disciplinas, turmas);
+
+    liberarDisciplinas(disciplinas);
+    liberarTurmas(turmas);
+
+    return 0;
+}
