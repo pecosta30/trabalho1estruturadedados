@@ -1,0 +1,49 @@
+#include <stdlib.h>
+#include <stdio.h>
+
+typedef struct NoAluno
+{
+    int id_aluno;
+    char nome_aluno[30];
+    char email_aluno[30];
+    char data_nascimento[10];
+    struct NoAluno *proximo;
+
+}NoAluno;
+
+
+void ler_aluno(NoAluno *novo)
+{
+     int c;
+
+    printf("Insira ID do aluno: ");
+    scanf("%d", &novo->id_aluno);
+    while ((c = getchar()) != '\n' && c != EOF);
+
+    printf("Insira nome do aluno: ");
+    scanf("%29[^\n]", novo->nome_aluno);
+    while ((c = getchar()) != '\n' && c != EOF);
+
+    printf("Insira email do aluno: ");
+    scanf("%29[^\n]", novo->email_aluno);
+    while ((c = getchar()) != '\n' && c != EOF);
+
+    printf("Insira data de nascimento (DD/MM/AAAA): ");
+    scanf("%9[^\n]", novo->data_nascimento);
+    while ((c = getchar()) != '\n' && c != EOF);
+
+}
+
+void inserir_aluno(NoAluno **cabeca)
+{
+    NoAluno *novo = malloc(sizeof(NoAluno));
+    if(novo = NULL)
+    {
+        printf("Erro ao inserir Aluno. Erro de Memória");
+        return;
+    }
+
+    novo->proximo = *cabeca;
+    *cabeca = novo;
+    ler_aluno(novo);
+}
