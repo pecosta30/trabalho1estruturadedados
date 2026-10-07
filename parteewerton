@@ -1,0 +1,52 @@
+#include <stdio.h>
+#include <string.h>
+#include <locale.h>
+#include <stdlib.h>
+
+#define TAM 1000
+
+typedef struct nodepartamento {
+    int iddepartamento;
+    char nomedepartamento[30];
+    char sigladepartamento[5];
+    struct nodepartamento *proximo;
+} departamento;
+
+
+void ler_string(char *texto, int tamanho)
+{
+    fgets(texto, tamanho, stdin);
+    texto[strcspn(texto, "\n")] = '\0';
+}
+
+
+void lerdepartamento(departamento *novo)
+{
+    puts("Insira o nome do departamento:");
+    ler_string(novo->nomedepartamento, 30);
+
+    puts("Insira a sigla do departamento:");
+    ler_string(novo->sigladepartamento, 5);
+
+    return;
+}
+
+
+void inseredepartamento(departamento **pnovo)
+{   
+    departamento *novo;
+
+    novo = malloc(sizeof(departamento));  
+
+    if(novo == NULL) {
+        puts("Erro ao inserir Departamento. Erro de Memória");
+        return;
+    }
+
+    novo->proximo = *pnovo;
+    *pnovo = novo;
+
+    lerdepartamento(novo);
+
+    return;
+}
