@@ -1,0 +1,4 @@
+10;Ciência da Computação;3200;1
+11;Matemática;2800;1
+12;Letras;2700;2
+13;Engenharia Civil;3600;3

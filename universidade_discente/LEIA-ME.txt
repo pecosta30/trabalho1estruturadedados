@@ -1,0 +1,26 @@
+UNIVERSIDADE DISCENTE - Gerador de relatorios (Estrutura de Dados, em C)
+
+COMO COMPILAR
+  gcc -Wall -Wextra -o gerador main.c leitura.c relatorio.c aluno.c curso.c disciplina.c
+
+COMO EXECUTAR
+  ./gerador            (no Windows: gerador.exe)
+  Informe a pasta dos .txt (Enter usa "dados") e escolha o relatorio no menu.
+  Os relatorios sao gravados em arquivo .txt na pasta atual.
+
+ARQUIVOS (cada um com uma parte do grupo)
+  estruturas.h  structs e prototipos compartilhados (contrato do grupo)
+  aluno.c       Aluno e Departamento
+  curso.c       Curso e CursoDisciplina (relacao N:N)
+  disciplina.c  Disciplina e Turma
+  leitura.c     leitura dos .txt e chamada das funcoes inserirX
+  relatorio.c   listas dinamicas por secao + desenho da tabela com + - |
+  main.c        menu e escolha da pasta/arquivos
+
+FORMATO DOS ARQUIVOS (campos separados por ;)
+  departamentos.txt    id_departamento;nome;sigla
+  cursos.txt           id_curso;nome;carga_horaria_total;id_departamento
+  alunos.txt           id_aluno;nome;email;data_nascimento;id_curso
+  disciplinas.txt      id_disciplina;nome;carga_horaria
+  turmas.txt           id_turma;sala;periodo;id_disciplina
+  curso_disciplina.txt id_curso;id_disciplina

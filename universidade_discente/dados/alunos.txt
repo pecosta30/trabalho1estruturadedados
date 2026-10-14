@@ -1,0 +1,6 @@
+2024001;Maria Souza;maria.souza@exemplo.com;15/03/2004;10
+2024002;João Lima;joao.lima@exemplo.com;02/11/2003;11
+2024003;Ana Beatriz Oliveira;ana.oliveira@exemplo.com;27/07/2005;10
+2024004;Carlos Eduardo Santos;carlos.santos@exemplo.com;09/01/2004;12
+2024005;Fernanda Costa;fernanda.costa@exemplo.com;30/05/2003;13
+2024006;Pedro Henrique Alves;pedro.alves@exemplo.com;18/09/2004;10

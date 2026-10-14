@@ -1,0 +1,6 @@
+100;Estrutura de Dados;80
+101;Cálculo I;60
+102;Algoritmos;80
+103;Álgebra Linear;60
+104;Literatura Brasileira;60
+105;Resistência dos Materiais;80
